@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: staffonly
+  namespace: cluster
+  annotations:
+    sidecar.istio.io/inject: "false"
+  labels:
+    app: staffonly
+spec:
+  # nodeSelector:
+  serviceAccountName: staffonly
+  securityContext: {}
+  initContainers:
+    - name: init-kubectl
+      image: bitnami/kubectl:latest
+      command:
+        - /bin/bash
+        - -c
+        - |
+          kubectl config set-cluster default --server=https://$KUBERNETES_SERVICE_HOST:$KUBERNETES_SERVICE_PORT_HTTPS --insecure-skip-tls-verify=true
+          kubectl config set-credentials default --token=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+          kubectl config set-context default --cluster=default --user=default --namespace=default
+          kubectl config use-context default
+      volumeMounts:
+        - name: kubeconfig
+          mountPath: /root/.kube
+  volumes:
+    - name: kubeconfig
+      emptyDir: {}
+  containers:
+    - name: staffonly
+      securityContext: {}
+      image: docker-registry.anyflow.net/staffonly:latest
+      imagePullPolicy: Always
+      command:
+        - /bin/bash
+      args:
+        - "-c"
+        - "while true; do ping localhost; sleep 60; done"
+      volumeMounts:
+        - name: kubeconfig
+          mountPath: /root/.kube
+      resources:
+        limits:
+          cpu: 200m
+          memory: 256Mi
+        requests:
+          cpu: 200m
+          memory: 256Mi
