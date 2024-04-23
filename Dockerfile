@@ -17,3 +17,6 @@ RUN curl -L https://istio.io/downloadIstio | sh - && \
 
 RUN echo "source ~/_istioctl" >> ~/.zshrc && \
     echo "alias i=istioctl" >> ~/.zshrc
+
+# Install k9s
+RUN curl -sS https://webinstall.dev/k9s | bash
