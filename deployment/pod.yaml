@@ -1,8 +1,37 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: staffonly
+  namespace: service
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: staffonly
+rules:
+  - apiGroups: ["*"]
+    resources: ["*"]
+    verbs: ["*"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: staffonly
+subjects:
+  - kind: ServiceAccount
+    name: staffonly
+    namespace: service
+roleRef:
+  kind: ClusterRole
+  name: staffonly
+  apiGroup: rbac.authorization.k8s.io
+---
 apiVersion: v1
 kind: Pod
 metadata:
   name: staffonly
-  namespace: cluster
+  namespace: service
   labels:
     app: staffonly
 spec:

@@ -11,9 +11,9 @@ RUN echo "source <(kubectl completion zsh)" >> ~/.zshrc && \
 
 # Install istioctl
 RUN curl -L https://istio.io/downloadIstio | sh - && \
-    mv istio-1.22.0/bin/istioctl /usr/local/bin/istioctl && \
-    cp istio-1.22.0/tools/_istioctl ~/_istioctl && \
-    rm -rf istio-1.22.0
+    mv istio-1.23.0/bin/istioctl /usr/local/bin/istioctl && \
+    cp istio-1.23.0/tools/_istioctl ~/_istioctl && \
+    rm -rf istio-1.23.0
 
 RUN echo "source ~/_istioctl" >> ~/.zshrc && \
     echo "alias i=istioctl" >> ~/.zshrc
