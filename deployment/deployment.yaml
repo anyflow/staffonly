@@ -1,0 +1,71 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: staffonly
+  namespace: service
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: staffonly
+rules:
+  - apiGroups: ["*"]
+    resources: ["*"]
+    verbs: ["*"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: staffonly
+subjects:
+  - kind: ServiceAccount
+    name: staffonly
+    namespace: service
+roleRef:
+  kind: ClusterRole
+  name: staffonly
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: staffonly
+  namespace: service
+  labels:
+    app: staffonly
+    version: latest
+spec:
+  revisionHistoryLimit: 0
+  replicas: 1
+  selector:
+    matchLabels:
+      app: staffonly
+      version: latest
+  template:
+    metadata:
+      name: staffonly
+      namespace: service
+      labels:
+        app: staffonly
+        version: latest
+    spec:
+      serviceAccountName: staffonly
+      securityContext: {}
+      containers:
+        - name: staffonly
+          securityContext: {}
+          image: anyflow/staffonly:latest
+          imagePullPolicy: Always
+          command:
+            - /bin/zsh
+          args:
+            - "-c"
+            - "while true; do ping localhost; sleep 60; done"
+          resources:
+            limits:
+              cpu: 200m
+              memory: 256Mi
+            requests:
+              cpu: 200m
+              memory: 256Mi
